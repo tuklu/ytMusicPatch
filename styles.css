@@ -1,0 +1,58 @@
+/* Container that replaces YTM's static lyrics block */
+.ytsl-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Each lyric line */
+.ytsl-line {
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 6px 0;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: color 0.25s ease, font-size 0.25s ease, opacity 0.25s ease;
+  user-select: text;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Past lines — slightly dimmer */
+.ytsl-line.ytsl-past {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Active (current) line — bright, slightly larger */
+.ytsl-line.ytsl-active {
+  color: #ffffff;
+  font-size: 15px;
+}
+
+/* Future lines */
+.ytsl-line.ytsl-future {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Instrumental / empty line placeholder */
+.ytsl-line.ytsl-instrumental {
+  color: rgba(255, 255, 255, 0.2);
+  font-style: italic;
+}
+
+/* Status messages (loading, error, no lyrics) */
+.ytsl-status {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  padding: 8px 0;
+  font-style: italic;
+}
+
+/* Clicking a line seeks to that timestamp */
+.ytsl-line:hover {
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+}

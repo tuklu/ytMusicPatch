@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "YT Music Synced Lyrics",
+  "version": "1.0.0",
+  "description": "Makes YouTube Music lyrics section time-synced, feeling completely native.",
+  "permissions": [],
+  "host_permissions": [
+    "https://music.youtube.com/*",
+    "https://lrclib.net/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://music.youtube.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
