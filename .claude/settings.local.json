@@ -7,7 +7,8 @@
       "WebFetch(domain:medium.com)",
       "Bash(ls ~/Picture*/)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:api.github.com)"
+      "WebFetch(domain:api.github.com)",
+      "Bash(awk 'NR>4886' /home/tuklu/Development/Playground/ytMusicLyrics/sourcecode.html)"
     ]
   }
 }

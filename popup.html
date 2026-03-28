@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YTM+</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="brand-logo">▶</span>
+      <span class="brand-name">YTM<span class="brand-plus">+</span></span>
+    </div>
+    <p class="brand-sub">music.youtube.com</p>
+  </header>
+
+  <div class="divider"></div>
+
+  <main>
+
+    <label class="row" data-mode="sync">
+      <div class="row-icon">
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 14.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" fill="currentColor"/>
+          <path d="M7 14.5V5l8-1.5v7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M15 11a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="row-text">
+        <span class="row-label">Synced Lyrics</span>
+        <span class="row-desc">Highlights lines as the song plays. Click any line to seek.</span>
+      </div>
+      <div class="toggle" id="toggle-sync"></div>
+    </label>
+
+    <label class="row" data-mode="large">
+      <div class="row-icon">
+        <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <text x="1" y="15" font-size="13" font-family="system-ui,sans-serif" font-weight="700">A</text>
+          <text x="12" y="17" font-size="9"  font-family="system-ui,sans-serif" font-weight="400">a</text>
+        </svg>
+      </div>
+      <div class="row-text">
+        <span class="row-label">Large Lyrics</span>
+        <span class="row-desc">Bigger text with the active line really standing out.</span>
+      </div>
+      <div class="toggle" id="toggle-large"></div>
+    </label>
+
+    <label class="row" data-mode="overhaul">
+      <div class="row-icon">
+        <svg viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 2c0 0 1.4 3.2 1.4 8S10 18 10 18s-1.4-3.2-1.4-8S10 2 10 2Z"/>
+          <path d="M2 10c0 0 3.2 1.4 8 1.4s8-1.4 8-1.4-3.2 1.4-8 1.4S2 10 2 10Z"/>
+          <circle cx="10" cy="10" r="1.5"/>
+        </svg>
+      </div>
+      <div class="row-text">
+        <span class="row-label">UI Overhaul</span>
+        <span class="row-desc">Ambient art glow, thin scrollbars, polished controls.</span>
+      </div>
+      <div class="toggle" id="toggle-overhaul"></div>
+    </label>
+
+  </main>
+
+  <div class="divider"></div>
+
+  <footer>
+    <span class="footer-note">Changes apply instantly on the active tab.</span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,58 +1,246 @@
-/* Container that replaces YTM's static lyrics block */
-.ytsl-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  padding: 0;
-  width: 100%;
-  overflow: hidden;
+/* ═══════════════════════════════════════════════════════════════════════
+   GLOBAL — always active on music.youtube.com
+═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Hide horizontal scrollbars site-wide; scroll gestures still work ── */
+::-webkit-scrollbar:horizontal {
+  height: 0 !important;
+  display: none !important;
 }
 
-/* Each lyric line */
+/* Vertical: slim them down but keep visible */
+::-webkit-scrollbar         { width: 5px; }
+::-webkit-scrollbar-track   { background: transparent; }
+::-webkit-scrollbar-thumb   { background: rgba(255,255,255,0.13); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.26); }
+
+/* Firefox vertical — thin globally */
+* { scrollbar-color: rgba(255,255,255,0.12) transparent; }
+
+/* Firefox horizontal — hide on carousels (confirmed selector from CDP audit) */
+ul.style-scope.ytmusic-carousel {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SYNCED LYRICS CONTAINER
+═══════════════════════════════════════════════════════════════════════ */
+
+#ytsl-container {
+  width: 100%;
+  padding: 2px 0 160px;
+  box-sizing: border-box;
+}
+
 .ytsl-line {
   font-size: 14px;
-  line-height: 1.6;
-  padding: 6px 0;
-  color: rgba(255, 255, 255, 0.35);
+  line-height: 1.75;
+  padding: 5px 0;
+  color: rgba(255, 255, 255, 0.3);
   cursor: pointer;
-  transition: color 0.25s ease, font-size 0.25s ease, opacity 0.25s ease;
+  transition: color 0.3s ease, font-size 0.3s ease;
   user-select: text;
   white-space: pre-wrap;
   word-break: break-word;
 }
 
-/* Past lines — slightly dimmer */
-.ytsl-line.ytsl-past {
-  color: rgba(255, 255, 255, 0.35);
-}
+.ytsl-line.ytsl-past   { color: rgba(255, 255, 255, 0.28); }
+.ytsl-line.ytsl-future { color: rgba(255, 255, 255, 0.28); }
 
-/* Active (current) line — bright, slightly larger */
 .ytsl-line.ytsl-active {
   color: #ffffff;
   font-size: 15px;
 }
 
-/* Future lines */
-.ytsl-line.ytsl-future {
-  color: rgba(255, 255, 255, 0.35);
-}
-
-/* Instrumental / empty line placeholder */
 .ytsl-line.ytsl-instrumental {
-  color: rgba(255, 255, 255, 0.2);
-  font-style: italic;
+  color: rgba(255, 255, 255, 0.13);
+  letter-spacing: 0.06em;
 }
 
-/* Status messages (loading, error, no lyrics) */
+.ytsl-line:not(.ytsl-active):hover {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
 .ytsl-status {
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 14px;
-  padding: 8px 0;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 13px;
+  padding: 2px 0 14px;
   font-style: italic;
 }
 
-/* Clicking a line seeks to that timestamp */
-.ytsl-line:hover {
-  color: rgba(255, 255, 255, 0.75);
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LARGE LYRICS  (body.ytsl-large)
+═══════════════════════════════════════════════════════════════════════ */
+
+body.ytsl-large #ytsl-container .ytsl-line {
+  font-size: 20px !important;
+  line-height: 1.9  !important;
+  padding: 9px 0    !important;
+}
+
+body.ytsl-large #ytsl-container .ytsl-line.ytsl-active {
+  font-size: 27px !important;
+}
+
+body.ytsl-large ytmusic-description-shelf-renderer yt-formatted-string {
+  font-size: 20px !important;
+  line-height: 1.9  !important;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   UI OVERHAUL  (body.ytsl-overhaul)
+═══════════════════════════════════════════════════════════════════════ */
+
+/*
+ * CDP stacking order confirmed:
+ *   body                        bg: rgb(3,3,3)  pos:static  z:auto
+ *   ytmusic-browse-response     pos:relative    z:auto
+ *   ytmusic-player-page         pos:fixed       z:2         translateY(871→0)
+ *   ytmusic-player-bar          pos:fixed       z:4
+ *
+ * Strategy:
+ *   - Make body transparent → ambient sits as true background behind all content
+ *   - Put ambient at z:-1 so it's genuinely behind everything
+ *   - Player-page (z:2) and player-bar (z:4) stay above it
+ */
+
+body.ytsl-overhaul {
+  background: transparent !important;
+}
+
+/* ── Ambient album-art background ── */
+#ytsl-ambient {
+  position: fixed;
+  inset: -8%;            /* oversize to hide blur-edge halos */
+  z-index: -1;           /* behind all YTM content */
+  pointer-events: none;
+  background-size: cover;
+  background-position: center;
+  filter: blur(100px) saturate(3.5) brightness(0.28);
+  opacity: 0.9;
+  transition: background-image 2.5s ease;
+}
+
+/* ── Player page expand — smoother than YTM's default 0.3s ──────────
+ *
+ * YTM native: transform 0.3s cubic-bezier(0.2, 0, 0.6, 1)
+ * We replace with expo-out at 0.42s — fast start, graceful settle.
+ * The player slides up from translateY(871px) → translateY(0).
+ * ─────────────────────────────────────────────────────────────────── */
+body.ytsl-overhaul ytmusic-player-page {
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+/* ── Player bar ── */
+body.ytsl-overhaul ytmusic-player-bar {
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+body.ytsl-overhaul .image.ytmusic-player-bar {
+  border-radius: 6px !important;
+  overflow: hidden   !important;
+}
+
+/* ── Progress / volume sliders ── */
+body.ytsl-overhaul ytmusic-player-bar #progress-bar {
+  --paper-slider-active-color:    rgba(255,255,255,0.88) !important;
+  --paper-slider-knob-color:      #ffffff !important;
+  --paper-slider-container-color: rgba(255,255,255,0.13) !important;
+}
+
+body.ytsl-overhaul ytmusic-player-bar #volume-slider {
+  --paper-slider-active-color:    rgba(255,255,255,0.65) !important;
+  --paper-slider-container-color: rgba(255,255,255,0.11) !important;
+}
+
+/* ── Control icon buttons ── */
+body.ytsl-overhaul ytmusic-player-bar tp-yt-paper-icon-button {
+  transition: transform 0.13s ease, opacity 0.13s ease !important;
+}
+
+body.ytsl-overhaul ytmusic-player-bar tp-yt-paper-icon-button:hover {
+  transform: scale(1.14) !important;
+  opacity: 1 !important;
+}
+
+/* ── Mini player — hover affordance on the clickable left area ── */
+body.ytsl-overhaul ytmusic-player-bar .content-info-wrapper {
+  border-radius: 8px;
+  transition: background 0.18s ease;
+  padding: 4px 6px   !important;
+  margin: -4px -6px  !important;
   cursor: pointer;
+}
+
+body.ytsl-overhaul ytmusic-player-bar .content-info-wrapper:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+body.ytsl-overhaul ytmusic-player-bar .image.ytmusic-player-bar {
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+body.ytsl-overhaul ytmusic-player-bar .content-info-wrapper:hover .image.ytmusic-player-bar {
+  transform: scale(1.04) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ── Side panel ── */
+body.ytsl-overhaul #side-panel {
+  border-left: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+/* ── Queue items ── */
+body.ytsl-overhaul ytmusic-player-queue-item {
+  border-radius: 8px !important;
+  transition: background 0.14s ease !important;
+  margin: 0 4px !important;
+}
+
+body.ytsl-overhaul ytmusic-player-queue-item:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+body.ytsl-overhaul ytmusic-player-queue-item[selected] {
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+body.ytsl-overhaul ytmusic-player-queue-item[selected] .song-title {
+  color: #ffffff !important;
+}
+
+/* Queue thumbnail — confirmed selector from page source */
+body.ytsl-overhaul ytmusic-player-queue-item yt-img-shadow.thumbnail,
+body.ytsl-overhaul ytmusic-player-queue-item yt-img-shadow.thumbnail img {
+  border-radius: 4px !important;
+  overflow: hidden   !important;
+}
+
+/* ── Tabs ── */
+body.ytsl-overhaul tp-yt-paper-tab {
+  transition: color 0.15s ease, opacity 0.15s ease !important;
+  letter-spacing: 0.03em !important;
+}
+
+/* ── Typography ── */
+body.ytsl-overhaul ytmusic-player-bar .title.ytmusic-player-bar {
+  letter-spacing: -0.01em !important;
+}
+
+/* ── Lyrics section breathing room ── */
+body.ytsl-overhaul #ytsl-container {
+  padding-top: 8px;
+}
+
+body.ytsl-overhaul #ytsl-container .ytsl-line {
+  padding: 6px 0;
+}
+
+/* Combined large + overhaul */
+body.ytsl-overhaul.ytsl-large #ytsl-container .ytsl-line.ytsl-active {
+  font-size: 28px !important;
 }
